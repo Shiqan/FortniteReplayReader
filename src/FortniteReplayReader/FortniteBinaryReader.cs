@@ -11,28 +11,37 @@ namespace FortniteReplayReader
     public class FortniteBinaryReader : BinaryReader
     {
         public const uint FileMagic = 0x1CA2E27F;
-        private IList<IObserver<PlayerElimination>> _observers;
 
-        public Replay Replay { get; private set; }
+        private Replay Replay { get; set; }
 
         public FortniteBinaryReader(Stream input) : base(input)
         {
             this.Replay = new Replay();
-            this._observers = new List<IObserver<PlayerElimination>>();
-
-            this.ParseMeta();
-            this.ParseChunks();
         }
 
         public FortniteBinaryReader(Stream input, int offset) : base(input)
         {
-            this.Replay = new Replay();
-            this._observers = new List<IObserver<PlayerElimination>>();
+            if (input.Length < offset)
+            {
+                throw new EndOfStreamException();
+            }
 
-            this.ParseChunks();
+            this.Replay = new Replay();
+            BaseStream.Position = offset;
         }
 
-        internal string ReadFString()
+        public Replay ReadFile()
+        {
+            if (BaseStream.Position == 0)
+            {
+                this.ParseMeta();
+            }
+
+            this.ParseChunks();
+            return this.Replay;
+        }
+
+        protected string ReadFString()
         {
             var length = ReadInt32();
 
@@ -60,23 +69,23 @@ namespace FortniteReplayReader
             return value.Trim(new[] { ' ', '\0' });
         }
 
-        internal bool ReadAsBoolean()
+        protected bool ReadAsBoolean()
         {
             return ReadUInt32() == 1;
         }
 
-        internal string ReadGUID()
+        protected string ReadGUID()
         {
             var guid = new Guid(ReadBytes(16));
             return guid.ToString();
         }
 
-        internal void SkipBytes(uint byteCount)
+        protected void SkipBytes(uint byteCount)
         {
             BaseStream.Seek(byteCount, SeekOrigin.Current);
         }
 
-        internal void ParseMeta()
+        protected void ParseMeta()
         {
             var magicNumber = ReadUInt32();
 
@@ -103,7 +112,7 @@ namespace FortniteReplayReader
             }
         }
 
-        internal void ParseChunks()
+        protected void ParseChunks()
         {
             while (BaseStream.Position < BaseStream.Length)
             {
@@ -135,13 +144,13 @@ namespace FortniteReplayReader
             }
         }
 
-        internal void ParseCheckPoint()
+        protected virtual void ParseCheckPoint()
         {
             var checkpointId = ReadFString();
             var checkpoint = ReadFString();
         }
 
-        internal void ParseEvent()
+        protected void ParseEvent()
         {
             var id = ReadFString();
             var group = ReadFString();
@@ -166,14 +175,14 @@ namespace FortniteReplayReader
             }
         }
 
-        internal void ParseTeamStats()
+        protected void ParseTeamStats()
         {
             Replay.TeamStats.Unknown = ReadUInt32();
             Replay.TeamStats.Position = ReadUInt32();
             Replay.TeamStats.TotalPlayers = ReadUInt32();
         }
 
-        internal void ParseMatchStats()
+        protected void ParseMatchStats()
         {
             SkipBytes(4);
 
@@ -190,7 +199,7 @@ namespace FortniteReplayReader
             Replay.Stats.TotalTraveled = ReadUInt32();
         }
 
-        internal void ParseElimination(uint time)
+        protected virtual PlayerElimination ParseElimination(uint time)
         {
             var release = Replay.Header.ReleaseNumber;
             if (release == 4)
@@ -223,9 +232,10 @@ namespace FortniteReplayReader
                 Time = time.MillisecondsToTimeStamp()
             };
             Replay.Eliminations.Add(elimination);
+            return elimination;
         }
 
-        internal void ParseReplayData()
+        protected virtual void ParseReplayData()
         {
             var start = ReadUInt32();
             var end = ReadUInt32();
@@ -234,7 +244,7 @@ namespace FortniteReplayReader
             length = ReadUInt32();
         }
 
-        internal void ParseHeader()
+        protected void ParseHeader()
         {
             SkipBytes(4);
             Replay.Header.HeaderVersion = ReadUInt32();

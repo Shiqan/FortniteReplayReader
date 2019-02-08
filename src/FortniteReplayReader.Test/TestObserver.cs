@@ -14,8 +14,9 @@ namespace FortniteReplayReader.Test
             var observer = new EliminationObserver();
             using (var stream = File.Open(replayFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                var provider = new ObservableFortniteBinaryReader<PlayerElimination>(stream);
+                var provider = new ElimObservableFortniteBinaryReader(stream);
                 observer.Subscribe(provider);
+                provider.ReadFile();
             }
         }
     }

@@ -17,7 +17,7 @@ namespace FortniteReplayReader
         {
             using (FortniteBinaryReader reader = new FortniteBinaryReader(stream, offset))
             {
-                return reader.Replay;
+                return reader.ReadFile();
             }
         }
 
@@ -33,7 +33,7 @@ namespace FortniteReplayReader
         {
             using (FortniteBinaryReader reader = new FortniteBinaryReader(stream))
             {
-                return reader.Replay;
+                return reader.ReadFile();
             }
         }
     }

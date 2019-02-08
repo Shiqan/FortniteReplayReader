@@ -16,12 +16,23 @@ namespace ConsoleReader
 
             foreach (var replayFile in replayFiles)
             {
-                var replayReader = new ReplayReader();
-                var replayInfo = replayReader.Read(replayFile);
-                
-                Console.WriteLine($"Total players: {replayInfo.TeamStats.TotalPlayers}");
+                //var replayReader = new ReplayReader();
+                //var replayInfo = replayReader.Read(replayFile);
 
+                //Console.WriteLine($"Total players: {replayInfo.TeamStats.TotalPlayers}");
+
+                var observer = new EliminationObserver();
+                using (var stream = File.Open(replayFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    var provider = new ElimObservableFortniteBinaryReader(stream);
+                    observer.Subscribe(provider);
+                    provider.ReadFile();
+                }
+                Console.ReadLine();
             }
+
+
+
             Console.ReadLine();
         }
     }

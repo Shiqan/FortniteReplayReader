@@ -1,20 +1,17 @@
-﻿using System;
+﻿using FortniteReplayReader.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace FortniteReplayReader
 {
-    public class ObservableFortniteBinaryReader<T> : FortniteBinaryReader, IObservable<T>
+    public abstract class ObservableFortniteBinaryReader<T> : FortniteBinaryReader, IObservable<T>
     {
         private IList<IObserver<T>> _observers;
 
         public ObservableFortniteBinaryReader(Stream input) : base(input)
         {
             this._observers = new List<IObserver<T>>();
-
-            this.ParseMeta();
-            this.ParseChunks();
-            this.OnCompleted();
         }
 
         public ObservableFortniteBinaryReader(Stream input, int offset) : base(input)
@@ -34,7 +31,7 @@ namespace FortniteReplayReader
             return new Unsubsriber<T>(_observers, observer);
         }
 
-        private void Notify(T value)
+        internal void Notify(T value)
         {
             foreach (var observer in _observers)
             {
