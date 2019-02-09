@@ -9,6 +9,10 @@ namespace FortniteReplayReader
         {
         }
 
+        public ElimObservableFortniteBinaryReader(Stream input, int offset) : base(input, offset)
+        {
+        }
+
         protected override PlayerElimination ParseElimination(uint time)
         {
             var elim = base.ParseElimination(time);

@@ -24,9 +24,10 @@ namespace ConsoleReader
                 var observer = new EliminationObserver();
                 using (var stream = File.Open(replayFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    var provider = new ElimObservableFortniteBinaryReader(stream);
+                    //var provider = new ElimObservableFortniteBinaryReader(stream);
+                    var provider = new ElimObservableFortniteBinaryReader(stream, 708);
                     observer.Subscribe(provider);
-                    provider.ReadFile();
+                    var replay = provider.ReadFile();
                 }
                 Console.ReadLine();
             }

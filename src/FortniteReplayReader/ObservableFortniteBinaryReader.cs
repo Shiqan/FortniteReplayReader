@@ -14,12 +14,9 @@ namespace FortniteReplayReader
             this._observers = new List<IObserver<T>>();
         }
 
-        public ObservableFortniteBinaryReader(Stream input, int offset) : base(input)
+        public ObservableFortniteBinaryReader(Stream input, int offset) : base(input, offset)
         {
             this._observers = new List<IObserver<T>>();
-
-            this.ParseChunks();
-            this.OnCompleted();
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
