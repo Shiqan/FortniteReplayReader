@@ -1,7 +1,9 @@
-﻿using FortniteReplayReader.Models;
+﻿using FortniteReplayReader.Core.Contracts;
+using FortniteReplayReader.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace FortniteReplayReader
 {
@@ -11,13 +13,32 @@ namespace FortniteReplayReader
 
         public ObservableFortniteBinaryReader(Stream input) : base(input)
         {
-            this._observers = new List<IObserver<T>>();
+            _observers = new List<IObserver<T>>();
         }
 
         public ObservableFortniteBinaryReader(Stream input, int offset) : base(input, offset)
         {
-            this._observers = new List<IObserver<T>>();
+            _observers = new List<IObserver<T>>();
+
+            var desiredType = typeof(IObserver<T>);
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(type => desiredType.IsAssignableFrom(type));
+
+            foreach (var type in types)
+            {
+                var instance = Activator.CreateInstance(type) as FortniteObserver<T>;
+                instance.Subscribe(this);
+            }
         }
+
+        public override Replay ReadFile()
+        {
+            var replay = base.ReadFile();
+            OnCompleted();
+            return replay;
+        }
+
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
@@ -38,7 +59,7 @@ namespace FortniteReplayReader
 
         public void OnCompleted()
         {
-            foreach (var observer in _observers)
+            foreach (var observer in _observers.ToArray())
             {
                 observer.OnCompleted();
             }
@@ -55,10 +76,10 @@ namespace FortniteReplayReader
                 this._observers = observers;
                 this._observer = observer;
             }
-            
+
             public void Dispose()
             {
-                if (_observer != null && _observers.Contains(_observer))
+                if (_observer != null)
                 {
                     _observers.Remove(_observer);
                 }

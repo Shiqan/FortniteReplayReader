@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FortniteReplayReader.Models
+namespace FortniteReplayReader.Core.Models
 {
     public class Replay
     {

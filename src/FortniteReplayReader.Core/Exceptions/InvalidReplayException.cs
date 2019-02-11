@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FortniteReplayReader.Exceptions
+namespace FortniteReplayReader.Core.Exceptions
 {
     public class InvalidReplayException : Exception
     {

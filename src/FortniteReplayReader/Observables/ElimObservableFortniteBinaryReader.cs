@@ -1,4 +1,4 @@
-﻿using FortniteReplayReader.Models;
+﻿using FortniteReplayReader.Core.Models;
 using System.IO;
 
 namespace FortniteReplayReader

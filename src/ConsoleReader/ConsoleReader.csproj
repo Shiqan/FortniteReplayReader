@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\FortniteReplayObserver.File\FortniteReplayObserver.File.csproj" />
+    <ProjectReference Include="..\FortniteReplayObserver.Mqtt\FortniteReplayObserver.Mqtt.csproj" />
     <ProjectReference Include="..\FortniteReplayReader\FortniteReplayReader.csproj" />
   </ItemGroup>
 

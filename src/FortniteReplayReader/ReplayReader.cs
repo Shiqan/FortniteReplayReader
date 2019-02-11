@@ -1,4 +1,4 @@
-﻿using FortniteReplayReader.Models;
+﻿using FortniteReplayReader.Core.Models;
 using System.IO;
 
 namespace FortniteReplayReader
@@ -15,7 +15,7 @@ namespace FortniteReplayReader
 
         public Replay Read(Stream stream, int offset)
         {
-            using (FortniteBinaryReader reader = new FortniteBinaryReader(stream, offset))
+            using (var reader = new FortniteBinaryReader(stream, offset))
             {
                 return reader.ReadFile();
             }
@@ -31,7 +31,7 @@ namespace FortniteReplayReader
 
         public Replay Read(Stream stream)
         {
-            using (FortniteBinaryReader reader = new FortniteBinaryReader(stream))
+            using (var reader = new FortniteBinaryReader(stream))
             {
                 return reader.ReadFile();
             }

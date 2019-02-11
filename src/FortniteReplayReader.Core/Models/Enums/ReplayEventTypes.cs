@@ -1,4 +1,4 @@
-namespace FortniteReplayReader.Models
+namespace FortniteReplayReader.Core.Models
 {
     public static class ReplayEventTypes
     {

@@ -1,5 +1,6 @@
-﻿using FortniteReplayReader;
-using System;
+﻿using FortniteReplayObservers.File;
+using FortniteReplayObservers.Mqtt;
+using FortniteReplayReader;
 using System.IO;
 using static System.Environment;
 
@@ -16,25 +17,22 @@ namespace ConsoleReader
 
             foreach (var replayFile in replayFiles)
             {
-                //var replayReader = new ReplayReader();
-                //var replayInfo = replayReader.Read(replayFile);
+                //    var replayReader = new ReplayReader();
+                //    var replayInfo = replayReader.Read(replayFile);
 
-                //Console.WriteLine($"Total players: {replayInfo.TeamStats.TotalPlayers}");
+                //    Console.WriteLine($"Total players: {replayInfo.TeamStats.TotalPlayers}");
 
-                var observer = new EliminationObserver();
+                //new FileObserver();
+                //new MqttObserver();
+
                 using (var stream = File.Open(replayFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    //var provider = new ElimObservableFortniteBinaryReader(stream);
-                    var provider = new ElimObservableFortniteBinaryReader(stream, 708);
-                    observer.Subscribe(provider);
-                    var replay = provider.ReadFile();
+                    using (var reader = new ElimObservableFortniteBinaryReader(stream))
+                    {
+                        var replay = reader.ReadFile();
+                    }
                 }
-                Console.ReadLine();
             }
-
-
-
-            Console.ReadLine();
         }
     }
 }

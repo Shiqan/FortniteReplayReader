@@ -1,8 +1,7 @@
-﻿using FortniteReplayReader.Exceptions;
+﻿using FortniteReplayReader.Core.Exceptions;
+using FortniteReplayReader.Core.Models;
 using FortniteReplayReader.Extensions;
-using FortniteReplayReader.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -30,7 +29,7 @@ namespace FortniteReplayReader
             BaseStream.Position = offset;
         }
 
-        public Replay ReadFile()
+        public virtual Replay ReadFile()
         {
             if (BaseStream.Position == 0)
             {
