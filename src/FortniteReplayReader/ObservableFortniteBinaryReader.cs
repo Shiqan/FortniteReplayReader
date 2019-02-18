@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace FortniteReplayReader
 {
@@ -20,16 +21,24 @@ namespace FortniteReplayReader
         {
             _observers = new List<IObserver<T>>();
 
-            var desiredType = typeof(IObserver<T>);
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(type => desiredType.IsAssignableFrom(type));
+            // load all observers so we can register them
+            //var binDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            //var loadedAssemblies = Directory.GetFiles(binDirectory, "FortniteReplayObserver.*.dll");
+            //foreach (var a in loadedAssemblies)
+            //{
+            //    Assembly.LoadFile(a);
+            //}
 
-            foreach (var type in types)
-            {
-                var instance = Activator.CreateInstance(type) as FortniteObserver<T>;
-                instance.Subscribe(this);
-            }
+            //var types = AppDomain.CurrentDomain.GetAssemblies()
+            //    .Where(a => a.FullName.StartsWith("FortniteReplayObserver."))
+            //    .SelectMany(s => s.GetTypes())
+            //    .Where(type => typeof(IObserver<T>).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface).Distinct();
+
+            //foreach (var type in types)
+            //{
+            //    var instance = Activator.CreateInstance(type) as FortniteObserver<T>;
+            //    instance.Subscribe(this);
+            //}
         }
 
         public override Replay ReadFile()

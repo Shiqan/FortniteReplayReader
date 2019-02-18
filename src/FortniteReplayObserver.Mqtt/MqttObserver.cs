@@ -2,7 +2,9 @@
 using FortniteReplayReader.Core.Models;
 using MQTTnet;
 using MQTTnet.Client;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FortniteReplayObservers.Mqtt
@@ -11,39 +13,29 @@ namespace FortniteReplayObservers.Mqtt
     {
         private IDisposable unsubscriber;
         private IMqttClient mqttClient;
+        private Dictionary<PlayerElimination, int> _playerEliminations;
 
-        public MqttObserver()
+        public MqttObserver(Dictionary<PlayerElimination, int> playerEliminations)
         {
+            _playerEliminations = playerEliminations ?? new Dictionary<PlayerElimination, int>();
+
             var factory = new MqttFactory();
             mqttClient = factory.CreateMqttClient();
 
             var options = new MqttClientOptionsBuilder()
+                .WithClientId($"mqttnet_{Guid.NewGuid()}")
                 .WithTcpServer("m24.cloudmqtt.com", 28142)
                 .WithCredentials("hubuldat", "4hdHXzZ1q_LN")
                 .WithTls()
                 .Build();
-
-            mqttClient.Disconnected += async (s, e) =>
-            {
-                Console.WriteLine("### DISCONNECTED FROM SERVER ###");
-                await Task.Delay(TimeSpan.FromSeconds(5));
-
-                try
-                {
-                    await mqttClient.ConnectAsync(options);
-                }
-                catch
-                {
-                    Console.WriteLine("### RECONNECTING FAILED ###");
-                }
-            };
 
             mqttClient.Connected += async (s, e) =>
             {
                 Console.WriteLine("### CONNECTED WITH SERVER ###");
             };
 
-            var connected = mqttClient.ConnectAsync(options).Result;
+            var task = mqttClient.ConnectAsync(options);
+            task.Wait();
         }
 
         private string CreateTopic(PlayerElimination e)
@@ -52,8 +44,7 @@ namespace FortniteReplayObservers.Mqtt
         }
         private string CreateMessagePayload(PlayerElimination e)
         {
-            var type = (e.Knocked) ? "knocked" : "eliminated";
-            return $"{e.Eliminator} {type} {e.Eliminated} with {e.GunType}";
+            return JsonConvert.SerializeObject(e);
         }
 
         public void OnCompleted()
@@ -68,14 +59,17 @@ namespace FortniteReplayObservers.Mqtt
 
         public void OnNext(PlayerElimination value)
         {
+            if (_playerEliminations.ContainsKey(value)) return;
+
             var message = new MqttApplicationMessageBuilder()
-                .WithTopic("Fortnite/Shiqan/1")
+                .WithTopic(CreateTopic(value))
                 .WithPayload(CreateMessagePayload(value))
                 .WithExactlyOnceQoS()
                 .WithRetainFlag(false)
                 .Build();
 
-            mqttClient.PublishAsync(message);
+            var task = mqttClient.PublishAsync(message);
+            task.Wait();
         }
 
         public override void Subscribe(IObservable<PlayerElimination> provider)
@@ -88,6 +82,9 @@ namespace FortniteReplayObservers.Mqtt
 
         public override void Unsubscribe()
         {
+            var task = mqttClient.DisconnectAsync();
+            task.Wait();
+
             mqttClient.Dispose();
             unsubscriber.Dispose();
         }

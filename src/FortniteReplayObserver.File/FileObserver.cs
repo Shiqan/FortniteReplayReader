@@ -1,6 +1,7 @@
 ﻿using FortniteReplayReader.Core.Contracts;
 using FortniteReplayReader.Core.Models;
 using System;
+using System.Collections.Generic;
 
 namespace FortniteReplayObservers.File
 {
@@ -8,9 +9,12 @@ namespace FortniteReplayObservers.File
     {
         private IDisposable unsubscriber;
         private string path = "";
+        
+        private Dictionary<PlayerElimination, int> _playerEliminations;
 
-        public FileObserver()
+        public FileObserver(Dictionary<PlayerElimination, int> playerEliminations)
         {
+            _playerEliminations = playerEliminations ?? new Dictionary<PlayerElimination, int>();
             path = @"D:\Projects\FortniteReplayReader\src\ConsoleReader\bin\Debug\netcoreapp2.1\test.txt";
         }
 
@@ -33,6 +37,8 @@ namespace FortniteReplayObservers.File
         }
         public void OnNext(PlayerElimination value)
         {
+            if (_playerEliminations.ContainsKey(value)) return;
+
             System.IO.File.AppendAllText(path, CreateMessagePayload(value));
         }
 

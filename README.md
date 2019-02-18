@@ -1,21 +1,12 @@
 # FortniteReplayReader
-Reading player eliminations, how many players you eliminated, your position and total player count from Fortnite replay files.
 
-This is the code created on a live stream at https://www.twitch.tv/fredimachadotv
+![version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg) 
+[![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/p5CMqJC)
 
-The video is available on YouTube at https://youtu.be/m2Twu9k5VQQ
+C# parser for your Fortnite replays.
 
-## How to run
-- Download and install .NET Core 2.1 SDK at https://www.microsoft.com/net/download
-- Open a Powershell/CMD/Terminal, CD to the code and run: `dotnet run --project .\src\ConsoleReader\`
+## Special thanks
+Special thanks to fredimachado for creating the first (public) [Fortnite Replay Parser](https://github.com/fredimachado/FortniteReplayReader).
 
-I really recommend you to download and install Visual Studio Code or Visual Studio IDE Community though (They are free!)
-They are available at https://visualstudio.microsoft.com
-
-## TODO
-This is what we're going to do in upcoming live streams:
-
-- [ ] Review classes to make it easy to consume
-- [ ] Write Unit tests
-- [ ] Build CI/CD pipeline using AppVeyor
-- [ ] Publish NuGet packages
+## License
+Licensed under the [MIT License](LICENSE).

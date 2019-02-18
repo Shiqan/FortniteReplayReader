@@ -9,11 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleReader", "ConsoleRea
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FortniteReplayReader.Test", "FortniteReplayReader.Test\FortniteReplayReader.Test.csproj", "{84250976-8F6B-4B27-94CB-F39FC6774052}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FortniteReplayReader.Core", "FortniteReplayReader.Core\FortniteReplayReader.Core.csproj", "{6EEC1C3C-FB81-46BD-B979-76EA50F8E5B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FortniteReplayReader.Core", "FortniteReplayReader.Core\FortniteReplayReader.Core.csproj", "{6EEC1C3C-FB81-46BD-B979-76EA50F8E5B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FortniteReplayObserver.Mqtt", "FortniteReplayObserver.Mqtt\FortniteReplayObserver.Mqtt.csproj", "{D0F8A6D7-0A05-4FD3-84E8-3D7111E6B84C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FortniteReplayObserver.Mqtt", "FortniteReplayObserver.Mqtt\FortniteReplayObserver.Mqtt.csproj", "{D0F8A6D7-0A05-4FD3-84E8-3D7111E6B84C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FortniteReplayObserver.File", "FortniteReplayObserver.File\FortniteReplayObserver.File.csproj", "{0492CD44-52A3-4468-8A77-3A9DCD470F63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FortniteReplayObserver.File", "FortniteReplayObserver.File\FortniteReplayObserver.File.csproj", "{0492CD44-52A3-4468-8A77-3A9DCD470F63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

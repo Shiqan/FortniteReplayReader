@@ -21,8 +21,15 @@ namespace FortniteReplayReader.Core.Models
             {
                 if (_releaseNumber == null)
                 {
-                    var result = new string(Release.ToCharArray().Where(c => char.IsDigit(c)).ToArray());
-                    _releaseNumber = string.IsNullOrWhiteSpace(result) ? 0 : int.Parse(result);
+                    if (string.IsNullOrWhiteSpace(Release))
+                    {
+                        _releaseNumber = 0;
+                    }
+                    else
+                    {
+                        var result = new string(Release.ToCharArray().Where(c => char.IsDigit(c)).ToArray());
+                        _releaseNumber = string.IsNullOrWhiteSpace(result) ? 0 : int.Parse(result);
+                    }
                 }
 
                 return _releaseNumber;
@@ -31,7 +38,7 @@ namespace FortniteReplayReader.Core.Models
 
 
         public uint Unknown1 { get; set; }
-        public uint Unknown2{ get; set; }
+        public uint Unknown2 { get; set; }
         public uint Unknown3 { get; set; }
         public uint Unknown4 { get; set; }
 

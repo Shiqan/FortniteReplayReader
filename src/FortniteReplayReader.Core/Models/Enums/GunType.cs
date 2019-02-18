@@ -11,6 +11,7 @@ namespace FortniteReplayReader.Core.Models
         Sniper = 6,
         PickAxe = 7,
         Grenade = 8,
+        InfinitySword = 9,
         GrenadeLauncher = 10,
         RPG = 11,
         Minigun = 12,
