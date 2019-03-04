@@ -21,10 +21,7 @@ namespace ConsoleReader
                 //    var replayInfo = replayReader.Read(replayFile);
 
                 //    Console.WriteLine($"Total players: {replayInfo.TeamStats.TotalPlayers}");
-
-                //new FileObserver();
-                new MqttObserver(null);
-
+                
                 using (var stream = File.Open(replayFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     using (var reader = new ElimObservableFortniteBinaryReader(stream, 554))

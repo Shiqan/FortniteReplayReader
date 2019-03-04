@@ -13,19 +13,20 @@ namespace FortniteReplayObservers.Mqtt
     {
         private IDisposable unsubscriber;
         private IMqttClient mqttClient;
-        private Dictionary<PlayerElimination, int> _playerEliminations;
+        private Dictionary<PlayerElimination, int> _cache;
 
-        public MqttObserver(Dictionary<PlayerElimination, int> playerEliminations)
+        public MqttObserver(Dictionary<PlayerElimination, int> cache)
         {
-            _playerEliminations = playerEliminations ?? new Dictionary<PlayerElimination, int>();
+            var settings = ReadSettingsFile<MqttSettings>();
+            _cache = cache ?? new Dictionary<PlayerElimination, int>();
 
             var factory = new MqttFactory();
             mqttClient = factory.CreateMqttClient();
 
             var options = new MqttClientOptionsBuilder()
                 .WithClientId($"mqttnet_{Guid.NewGuid()}")
-                .WithTcpServer("m24.cloudmqtt.com", 28142)
-                .WithCredentials("hubuldat", "4hdHXzZ1q_LN")
+                .WithTcpServer(settings.HostName, settings.Port)
+                .WithCredentials(settings.UserName, settings.Password)
                 .WithTls()
                 .Build();
 
@@ -59,7 +60,7 @@ namespace FortniteReplayObservers.Mqtt
 
         public void OnNext(PlayerElimination value)
         {
-            if (_playerEliminations.ContainsKey(value)) return;
+            if (_cache.ContainsKey(value)) return;
 
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic(CreateTopic(value))
@@ -88,5 +89,13 @@ namespace FortniteReplayObservers.Mqtt
             mqttClient.Dispose();
             unsubscriber.Dispose();
         }
+    }
+
+    public class MqttSettings
+    {
+        public string HostName { get; set; }
+        public int Port { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
     }
 }

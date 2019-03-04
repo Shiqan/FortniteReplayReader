@@ -9,13 +9,14 @@ namespace FortniteReplayObservers.File
     {
         private IDisposable unsubscriber;
         private string path = "";
-        
+
         private Dictionary<PlayerElimination, int> _playerEliminations;
 
         public FileObserver(Dictionary<PlayerElimination, int> playerEliminations)
         {
+            var settings = ReadSettingsFile<FileSettings>();
             _playerEliminations = playerEliminations ?? new Dictionary<PlayerElimination, int>();
-            path = @"D:\Projects\FortniteReplayReader\src\ConsoleReader\bin\Debug\netcoreapp2.1\test.txt";
+            path = settings.Path;
         }
 
 
@@ -54,5 +55,10 @@ namespace FortniteReplayObservers.File
         {
             unsubscriber.Dispose();
         }
+    }
+
+    public class FileSettings
+    {
+        public string Path { get; set; }
     }
 }

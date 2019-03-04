@@ -6,6 +6,12 @@
     <ProjectReference Include="..\FortniteReplayReader\FortniteReplayReader.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="FortniteReplayReader.Observerable">
+      <HintPath>..\FortniteReplayReader.Observerable\bin\Debug\netcoreapp2.1\FortniteReplayReader.Observerable.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
