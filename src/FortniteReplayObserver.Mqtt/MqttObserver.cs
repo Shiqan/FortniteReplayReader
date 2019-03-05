@@ -5,6 +5,7 @@ using MQTTnet.Client;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FortniteReplayObservers.Mqtt
@@ -14,10 +15,11 @@ namespace FortniteReplayObservers.Mqtt
         private IDisposable unsubscriber;
         private IMqttClient mqttClient;
         private Dictionary<PlayerElimination, int> _cache;
+        private MqttSettings _settings;
 
         public MqttObserver(Dictionary<PlayerElimination, int> cache)
         {
-            var settings = ReadSettingsFile<MqttSettings>();
+            _settings = ReadSettingsFile<MqttSettings>();
             _cache = cache ?? new Dictionary<PlayerElimination, int>();
 
             var factory = new MqttFactory();
@@ -25,8 +27,8 @@ namespace FortniteReplayObservers.Mqtt
 
             var options = new MqttClientOptionsBuilder()
                 .WithClientId($"mqttnet_{Guid.NewGuid()}")
-                .WithTcpServer(settings.HostName, settings.Port)
-                .WithCredentials(settings.UserName, settings.Password)
+                .WithTcpServer(_settings.HostName, _settings.Port)
+                .WithCredentials(_settings.UserName, _settings.Password)
                 .WithTls()
                 .Build();
 
@@ -41,6 +43,16 @@ namespace FortniteReplayObservers.Mqtt
 
         private string CreateTopic(PlayerElimination e)
         {
+            if (!string.IsNullOrWhiteSpace(_settings.Topic))
+            {
+                // replace placeholders
+                var topic = new StringBuilder(_settings.Topic);
+                topic.Replace("[Eliminator]", e.Eliminator);
+                topic.Replace("[Eliminated]", e.Eliminated);
+                topic.Replace("[Knocked]", e.Knocked.ToString());
+                topic.Replace("[GunType]", e.GunType.ToString());
+                return $"Fortnite/{topic}";
+            }
             return $"Fortnite/{e.Eliminator}/{e.Knocked}/{e.GunType}/";
         }
         private string CreateMessagePayload(PlayerElimination e)
@@ -97,5 +109,6 @@ namespace FortniteReplayObservers.Mqtt
         public int Port { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
+        public string Topic { get; set; }
     }
 }
