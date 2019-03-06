@@ -6,11 +6,11 @@ namespace FortniteReplayReader
 {
     public class ElimObservableFortniteBinaryReader : ObservableFortniteBinaryReader<PlayerElimination>
     {
-        public ElimObservableFortniteBinaryReader(Stream input, bool autoLoad = true, Dictionary<PlayerElimination, int> cache = null) : base(input, autoLoad, cache)
+        public ElimObservableFortniteBinaryReader(Stream input, bool autoLoad = true) : base(input, autoLoad)
         {
         }
 
-        public ElimObservableFortniteBinaryReader(Stream input, int offset, bool autoLoad = true, Dictionary<PlayerElimination, int> cache = null) : base(input, offset, autoLoad, cache)
+        public ElimObservableFortniteBinaryReader(Stream input, int offset, bool autoLoad = true) : base(input, offset, autoLoad)
         {
         }
 

@@ -12,17 +12,17 @@ namespace FortniteReplayReader
     {
         private IList<IObserver<T>> _observers;
 
-        public ObservableFortniteBinaryReader(Stream input, bool autoLoad = true, Dictionary<PlayerElimination, int> cache = null) : base(input)
+        public ObservableFortniteBinaryReader(Stream input, bool autoLoad = true) : base(input)
         {
-            Init(autoLoad, cache);
+            Init(autoLoad);
         }
 
-        public ObservableFortniteBinaryReader(Stream input, int offset, bool autoLoad = true, Dictionary<PlayerElimination, int> cache = null) : base(input, offset)
+        public ObservableFortniteBinaryReader(Stream input, int offset, bool autoLoad = true) : base(input, offset)
         {
-            Init(autoLoad, cache);
+            Init(autoLoad);
         }
 
-        private void Init(bool autoLoad, Dictionary<PlayerElimination, int> cache)
+        private void Init(bool autoLoad)
         {
             _observers = new List<IObserver<T>>();
 
@@ -43,7 +43,7 @@ namespace FortniteReplayReader
 
                 foreach (var type in types)
                 {
-                    var instance = Activator.CreateInstance(type, cache) as FortniteObserver<T>;
+                    var instance = Activator.CreateInstance(type) as FortniteObserver<T>;
                     instance.Subscribe(this);
                 }
             }

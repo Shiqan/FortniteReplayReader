@@ -15,7 +15,7 @@ namespace FortniteReplayReader.Core.Contracts
 
         protected TSettings ReadSettingsFile<TSettings>()
         {
-            var path = Path.Combine(new string[] { Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FortniteReplayWatcher", $"{this.GetType().Name}.json" });
+            var path = Path.Combine(new string[] { AppDomain.CurrentDomain.BaseDirectory, $"{this.GetType().Name}.json" });
 
             if (File.Exists(path))
             {

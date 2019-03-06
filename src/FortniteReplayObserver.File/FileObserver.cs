@@ -10,12 +10,9 @@ namespace FortniteReplayObservers.File
         private IDisposable unsubscriber;
         private string path = "";
 
-        private Dictionary<PlayerElimination, int> _playerEliminations;
-
-        public FileObserver(Dictionary<PlayerElimination, int> playerEliminations)
+        public FileObserver()
         {
             var settings = ReadSettingsFile<FileSettings>();
-            _playerEliminations = playerEliminations ?? new Dictionary<PlayerElimination, int>();
             path = settings.Path;
         }
 
@@ -38,8 +35,6 @@ namespace FortniteReplayObservers.File
         }
         public void OnNext(PlayerElimination value)
         {
-            if (_playerEliminations.ContainsKey(value)) return;
-
             System.IO.File.AppendAllText(path, CreateMessagePayload(value));
         }
 

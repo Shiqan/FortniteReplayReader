@@ -14,13 +14,12 @@ namespace FortniteReplayObservers.Mqtt
     {
         private IDisposable unsubscriber;
         private IMqttClient mqttClient;
-        private Dictionary<PlayerElimination, int> _cache;
+
         private MqttSettings _settings;
 
-        public MqttObserver(Dictionary<PlayerElimination, int> cache)
+        public MqttObserver()
         {
             _settings = ReadSettingsFile<MqttSettings>();
-            _cache = cache ?? new Dictionary<PlayerElimination, int>();
 
             var factory = new MqttFactory();
             mqttClient = factory.CreateMqttClient();
@@ -72,12 +71,10 @@ namespace FortniteReplayObservers.Mqtt
 
         public void OnNext(PlayerElimination value)
         {
-            if (_cache.ContainsKey(value)) return;
-
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic(CreateTopic(value))
                 .WithPayload(CreateMessagePayload(value))
-                .WithExactlyOnceQoS()
+                .WithAtLeastOnceQoS()
                 .WithRetainFlag(false)
                 .Build();
 
