@@ -1,11 +1,11 @@
 ﻿using FortniteReplayReader.Core.Contracts;
 using FortniteReplayReader.Core.Models;
+using FortniteReplayReader.Observerable.Contracts;
 using System;
-using System.Collections.Generic;
 
 namespace FortniteReplayObservers.File
 {
-    public class FileObserver : FortniteObserver<PlayerElimination>, IObserver<PlayerElimination>
+    public class FileObserver : FortniteObserver<PlayerElimination>, IFortniteObserver<PlayerElimination>
     {
         private IDisposable unsubscriber;
         private string path = "";
@@ -38,7 +38,7 @@ namespace FortniteReplayObservers.File
             System.IO.File.AppendAllText(path, CreateMessagePayload(value));
         }
 
-        public override void Subscribe(IObservable<PlayerElimination> provider)
+        public override void Subscribe(IFortniteObservable<PlayerElimination> provider)
         {
             if (provider != null)
             {
@@ -49,6 +49,11 @@ namespace FortniteReplayObservers.File
         public override void Unsubscribe()
         {
             unsubscriber.Dispose();
+        }
+
+        public void OnStart()
+        {
+            System.IO.File.AppendAllText(path, "started");
         }
     }
 

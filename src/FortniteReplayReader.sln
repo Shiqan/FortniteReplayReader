@@ -15,9 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FortniteReplayObserver.Mqtt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FortniteReplayObserver.File", "FortniteReplayObserver.File\FortniteReplayObserver.File.csproj", "{0492CD44-52A3-4468-8A77-3A9DCD470F63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FortniteReplayReader.Observerable", "FortniteReplayReader.Observerable\FortniteReplayReader.Observerable.csproj", "{60C0CCC6-9BBF-49A5-866E-B8CBC9C2B9AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FortniteReplayReader.Observerable", "FortniteReplayReader.Observerable\FortniteReplayReader.Observerable.csproj", "{60C0CCC6-9BBF-49A5-866E-B8CBC9C2B9AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FortniteReplayReader.Observable.Test", "FortniteReplayReader.Observable.Tes\FortniteReplayReader.Observable.Test.csproj", "{88ADE33B-2350-41D2-8205-52B551D81C37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FortniteReplayReader.Observable.Test", "FortniteReplayReader.Observable.Tes\FortniteReplayReader.Observable.Test.csproj", "{88ADE33B-2350-41D2-8205-52B551D81C37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FortniteReplayObserver.Redis", "FortniteReplayObserver.Redis\FortniteReplayObserver.Redis.csproj", "{D5EEA9C0-9168-495F-860A-C448E0A9AB72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +127,18 @@ Global
 		{88ADE33B-2350-41D2-8205-52B551D81C37}.Release|x64.Build.0 = Release|Any CPU
 		{88ADE33B-2350-41D2-8205-52B551D81C37}.Release|x86.ActiveCfg = Release|Any CPU
 		{88ADE33B-2350-41D2-8205-52B551D81C37}.Release|x86.Build.0 = Release|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Debug|x64.Build.0 = Debug|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Debug|x86.Build.0 = Debug|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Release|x64.ActiveCfg = Release|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Release|x64.Build.0 = Release|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Release|x86.ActiveCfg = Release|Any CPU
+		{D5EEA9C0-9168-495F-860A-C448E0A9AB72}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

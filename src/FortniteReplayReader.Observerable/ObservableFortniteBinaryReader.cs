@@ -1,5 +1,6 @@
 ﻿using FortniteReplayReader.Core.Contracts;
 using FortniteReplayReader.Core.Models;
+using FortniteReplayReader.Observerable.Contracts;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,9 +9,9 @@ using System.Reflection;
 
 namespace FortniteReplayReader
 {
-    public abstract class ObservableFortniteBinaryReader<T> : FortniteBinaryReader, IObservable<T>
+    public abstract class ObservableFortniteBinaryReader<T> : FortniteBinaryReader, IFortniteObservable<T>
     {
-        private IList<IObserver<T>> _observers;
+        private IList<IFortniteObserver<T>> _observers;
 
         public ObservableFortniteBinaryReader(Stream input, bool autoLoad = true) : base(input)
         {
@@ -24,7 +25,7 @@ namespace FortniteReplayReader
 
         private void Init(bool autoLoad)
         {
-            _observers = new List<IObserver<T>>();
+            _observers = new List<IFortniteObserver<T>>();
 
             //load all observers so we can register them
             if (autoLoad)
@@ -39,7 +40,7 @@ namespace FortniteReplayReader
                 var types = AppDomain.CurrentDomain.GetAssemblies()
                     .Where(a => a.FullName.StartsWith("FortniteReplayObserver."))
                     .SelectMany(s => s.GetTypes())
-                    .Where(type => typeof(IObserver<T>).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface).Distinct();
+                    .Where(type => typeof(IFortniteObserver<T>).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface).Distinct();
 
                 foreach (var type in types)
                 {
@@ -51,13 +52,19 @@ namespace FortniteReplayReader
 
         public override Replay ReadFile()
         {
-            var replay = base.ReadFile();
+            if (BaseStream.Position == 0)
+            {
+                OnStart();
+                this.ParseMeta();
+            }
+
+            this.ParseChunks();
             OnCompleted();
-            return replay;
+            return this.Replay;
         }
 
 
-        public IDisposable Subscribe(IObserver<T> observer)
+        public IDisposable Subscribe(IFortniteObserver<T> observer)
         {
             if (!_observers.Contains(observer))
             {
@@ -74,6 +81,14 @@ namespace FortniteReplayReader
             }
         }
 
+        public void OnStart()
+        {
+            foreach (var observer in _observers)
+            {
+                observer.OnStart();
+            }
+        }
+
         public void OnCompleted()
         {
             foreach (var observer in _observers.ToArray())
@@ -85,10 +100,10 @@ namespace FortniteReplayReader
 
         private class Unsubsriber<V> : IDisposable
         {
-            private IList<IObserver<V>> _observers;
-            private readonly IObserver<V> _observer;
+            private IList<IFortniteObserver<V>> _observers;
+            private readonly IFortniteObserver<V> _observer;
 
-            public Unsubsriber(IList<IObserver<V>> observers, IObserver<V> observer)
+            public Unsubsriber(IList<IFortniteObserver<V>> observers, IFortniteObserver<V> observer)
             {
                 this._observers = observers;
                 this._observer = observer;

@@ -11,7 +11,7 @@ namespace FortniteReplayReader
     {
         public const uint FileMagic = 0x1CA2E27F;
 
-        private Replay Replay { get; set; }
+        protected Replay Replay { get; set; }
 
         public FortniteBinaryReader(Stream input) : base(input)
         {
@@ -174,14 +174,15 @@ namespace FortniteReplayReader
             }
         }
 
-        protected void ParseTeamStats()
+        protected virtual TeamStats ParseTeamStats()
         {
             Replay.TeamStats.Unknown = ReadUInt32();
             Replay.TeamStats.Position = ReadUInt32();
             Replay.TeamStats.TotalPlayers = ReadUInt32();
+            return Replay.TeamStats;
         }
 
-        protected void ParseMatchStats()
+        protected virtual Stats ParseMatchStats()
         {
             SkipBytes(4);
 
@@ -196,6 +197,8 @@ namespace FortniteReplayReader
             Replay.Stats.MaterialsGathered = ReadUInt32();
             Replay.Stats.MaterialsUsed = ReadUInt32();
             Replay.Stats.TotalTraveled = ReadUInt32();
+
+            return Replay.Stats;
         }
 
         protected virtual PlayerElimination ParseElimination(uint time)

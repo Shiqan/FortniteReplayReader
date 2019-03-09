@@ -1,15 +1,14 @@
 ﻿using FortniteReplayReader.Core.Exceptions;
-using FortniteReplayReader.Core.Models;
+using FortniteReplayReader.Observerable.Contracts;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace FortniteReplayReader.Core.Contracts
 {
     public abstract class FortniteObserver<T>
     {
-        public abstract void Subscribe(IObservable<T> provider);
+        public abstract void Subscribe(IFortniteObservable<T> provider);
 
         public abstract void Unsubscribe();
 
