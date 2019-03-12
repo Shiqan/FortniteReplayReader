@@ -52,7 +52,7 @@ namespace FortniteReplayObservers.Mqtt
         {
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic(CreateTopic())
-                .WithPayload("start")
+                .WithPayload("{ \"start\": 1 }")
                 .WithAtLeastOnceQoS()
                 .WithRetainFlag(false)
                 .Build();

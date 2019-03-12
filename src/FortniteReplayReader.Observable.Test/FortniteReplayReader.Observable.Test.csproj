@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FortniteReplayReader.Core\FortniteReplayReader.Core.csproj" />
-    <ProjectReference Include="..\FortniteReplayReader.Observerable\FortniteReplayReader.Observerable.csproj" />
+    <ProjectReference Include="..\FortniteReplayReader.Observable\FortniteReplayReader.Observable.csproj" />
     <ProjectReference Include="..\FortniteReplayReader\FortniteReplayReader.csproj" />
   </ItemGroup>
 

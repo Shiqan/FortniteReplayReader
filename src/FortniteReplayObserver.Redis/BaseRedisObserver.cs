@@ -47,7 +47,7 @@ namespace FortniteReplayObserver.Redis
 
         public void OnStart()
         {
-            PubSub.Publish(_settings.Channel, "start");
+            PubSub.Publish(_settings.Channel, "{ \"start\": 1 }");
         }
 
         public override void Subscribe(IFortniteObservable<T> provider)
