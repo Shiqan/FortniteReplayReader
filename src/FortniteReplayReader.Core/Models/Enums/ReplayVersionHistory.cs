@@ -2,9 +2,13 @@ namespace FortniteReplayReader.Core.Models
 {
     public enum ReplayVersionHistory : uint
     {
-        HISTORY_INITIAL = 0,
-        HISTORY_FIXEDSIZE_FRIENDLY_NAME = 1,
-        HISTORY_COMPRESSION = 2,
-        HISTORY_RECORDED_TIMESTAMP = 3
+        Initial = 0,
+        FixedSizeFriendlyName = 1,
+        Compression = 2,
+        RecordedTimestamp = 3,
+        StreamChunkTimes = 4,
+        FriendlyNameEncoding = 5,
+        NewVersion,
+        Latest = NewVersion - 1
     }
 }

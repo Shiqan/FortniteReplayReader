@@ -1,9 +1,12 @@
-﻿namespace FortniteReplayReader.Core.Models
+﻿using FortniteReplayReader.Core.Contracts;
+
+namespace FortniteReplayReader.Core.Models
 {
-    public class TeamStats
+    public class TeamStats : IEvent
     {
         public uint Unknown { get; set; }
         public uint Position { get; set; }
         public uint TotalPlayers { get; set; }
+        public EventMetadata EventMetadata { get; set; }
     }
 }
