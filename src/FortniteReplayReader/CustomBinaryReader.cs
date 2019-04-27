@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FortniteReplayReader.Core.Models.Enums;
+using System;
 using System.IO;
 using System.Text;
 
@@ -93,6 +94,49 @@ namespace FortniteReplayReader
             return ReadUInt32() == 1;
         }
 
+        /// <summary>
+        /// Reads an array of tuples from the current stream. The array is prefixed with the number of items in it.
+        /// see https://github.com/EpicGames/UnrealEngine/blob/7d9919ac7bfd80b7483012eab342cb427d60e8c9/Engine/Source/Runtime/Core/Public/Containers/Array.h#L1069
+        /// </summary>
+        /// <typeparam name="T">The type of the first value.</typeparam>
+        /// <typeparam name="U">The type of the second value.</typeparam>
+        /// <param name="func1">The function to parse the fist value.</param>
+        /// <param name="func2">The function to parse the second value.</param>
+        /// <returns>An array of tuples.</returns>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when the end of the stream is reached.</exception>
+        /// <exception cref="System.ObjectDisposedException">Thrown when the stream is closed.</exception>
+        /// <exception cref="System.IO.IOException">Thrown when an I/O error occurs.</exception>
+        public virtual (T, U)[] ReadTupleArray<T, U>(Func<T> func1, Func<U> func2)
+        {
+            var count = ReadUInt32();
+            var arr = new (T, U)[count];
+            for (var i = 0; i < count; i++)
+            {
+                arr[i] = (func1.Invoke(), func2.Invoke());
+            }
+            return arr;
+        }
+
+        /// <summary>
+        /// Reads an array of <typeparamref name="T"/> from the current stream. The array is prefixed with the number of items in it.
+        /// see https://github.com/EpicGames/UnrealEngine/blob/7d9919ac7bfd80b7483012eab342cb427d60e8c9/Engine/Source/Runtime/Core/Public/Containers/Array.h#L1069
+        /// </summary>
+        /// <typeparam name="T">The type of the second value.</typeparam>
+        /// <param name="func1">The function to parse the fist value.</param>
+        /// <returns>An array of tuples.</returns>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when the end of the stream is reached.</exception>
+        /// <exception cref="System.ObjectDisposedException">Thrown when the stream is closed.</exception>
+        /// <exception cref="System.IO.IOException">Thrown when an I/O error occurs.</exception>
+        public virtual T[] ReadArray<T>(Func<T> func1)
+        {
+            var count = ReadUInt32();
+            var arr = new T[count];
+            for (var i = 0; i < count; i++)
+            {
+                arr[i] = (func1.Invoke());
+            }
+            return arr;
+        }
 
         /// <summary>
         /// Reads 16 bytes from the current stream and advances the current position of the stream by 16-bytes.
@@ -115,9 +159,30 @@ namespace FortniteReplayReader
         /// <exception cref="System.IO.EndOfStreamException">Thrown when the end of the stream is reached.</exception>
         /// <exception cref="System.ObjectDisposedException">Thrown when the stream is closed.</exception>
         /// <exception cref="System.IO.IOException">Thrown when an I/O error occurs.</exception>
-        protected void SkipBytes(uint byteCount)
+        public void SkipBytes(uint byteCount)
         {
             BaseStream.Seek(byteCount, SeekOrigin.Current);
+        }
+
+        /// <summary>
+        /// 
+        /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/Core/Private/Serialization/Archive.cpp#L1026
+        /// </summary>
+        /// <returns>uint</returns>
+        public virtual uint ReadIntPacked()
+        {
+            uint value = 0;
+            byte count = 0;
+            bool remaining = true;
+
+            while (remaining)
+            {
+                byte nextByte = ReadByte();
+                remaining = (nextByte & 1) == 1;            // Check 1 bit to see if theres more after this
+                nextByte >>= 1;                             // Shift to get actual 7 bit value
+                value += (uint)nextByte << (7 * count++);   // Add to total value
+            }
+            return value;
         }
     }
 }

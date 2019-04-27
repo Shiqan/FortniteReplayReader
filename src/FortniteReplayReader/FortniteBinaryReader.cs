@@ -267,7 +267,7 @@ namespace FortniteReplayReader
                 header.Major = ReadUInt16();
                 header.Minor = ReadUInt16();
                 header.Patch = ReadUInt16();
-                header.Changelist = ReadUInt16();
+                header.Changelist = ReadUInt32();
                 header.Branch = ReadFString();                
             }
             else
@@ -281,11 +281,8 @@ namespace FortniteReplayReader
             }
             else
             {
-                //  TODO array of tuple parser
-                if (ReadUInt32AsBoolean())
-                {
-                    header.LevelNamesAndTimes = new (string, uint)[1] { (ReadFString(), ReadUInt32()) };
-                }
+
+                header.LevelNamesAndTimes = ReadTupleArray(ReadFString, ReadUInt32);
             }
 
             if (header.Version >= NetworkVersionHistory.HISTORY_HEADER_FLAGS)
@@ -293,11 +290,7 @@ namespace FortniteReplayReader
                 header.Flags = ReadUInt32AsEnum<ReplayHeaderFlags>();
             }
 
-            //  TODO array of strings parser 
-            if (ReadUInt32AsBoolean())
-            {
-                header.GameSpecificData = new string[1] { ReadFString() };
-            }
+            header.GameSpecificData = ReadArray(ReadFString);
 
             return header;
         }

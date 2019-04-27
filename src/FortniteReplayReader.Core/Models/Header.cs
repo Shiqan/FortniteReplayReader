@@ -19,7 +19,6 @@ namespace FortniteReplayReader.Core.Models
         public string Branch { get; set; } = "";
         public (string, uint)[] LevelNamesAndTimes { get; set; }
         public ReplayHeaderFlags Flags { get; set; }
-        public uint Time { get; set; }
         public string[] GameSpecificData { get; set; }
     }
 }
