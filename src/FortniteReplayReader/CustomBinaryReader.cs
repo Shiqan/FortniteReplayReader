@@ -21,6 +21,7 @@ namespace FortniteReplayReader
 
         /// <summary>
         /// Reads a string from the current stream. The string is prefixed with the length as an 4-byte signed integer.
+        /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/Core/Private/Containers/String.cpp#L1390
         /// </summary>
         /// <returns>A string read from this stream.</returns>
         /// <exception cref="System.IO.EndOfStreamException">Thrown when the end of the stream is reached.</exception>

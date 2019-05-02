@@ -2,6 +2,9 @@
 
 namespace FortniteReplayReader.Core.Models
 {
+    /// <summary>
+    /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/NetworkReplayStreaming/LocalFileNetworkReplayStreaming/Public/LocalFileNetworkReplayStreaming.h#L88
+    /// </summary>
     public class ReplayMetadata
     {
         public uint LengthInMs { get; set; }

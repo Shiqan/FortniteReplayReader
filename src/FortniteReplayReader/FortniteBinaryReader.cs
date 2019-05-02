@@ -51,6 +51,10 @@ namespace FortniteReplayReader
             return this.Replay;
         }
 
+        /// <summary>
+        /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/NetworkReplayStreaming/LocalFileNetworkReplayStreaming/Private/LocalFileNetworkReplayStreaming.cpp#L183
+        /// </summary>
+        /// <returns></returns>
         public virtual ReplayMetadata ParseMetadata()
         {
             var magicNumber = ReadUInt32();
@@ -85,6 +89,9 @@ namespace FortniteReplayReader
             return meta;
         }
 
+        /// <summary>
+        /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/NetworkReplayStreaming/LocalFileNetworkReplayStreaming/Private/LocalFileNetworkReplayStreaming.cpp#L243
+        /// </summary>
         public virtual void ParseChunks()
         {
             while (BaseStream.Position < BaseStream.Length)
@@ -117,10 +124,17 @@ namespace FortniteReplayReader
             }
         }
 
+        /// <summary>
+        /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/NetworkReplayStreaming/LocalFileNetworkReplayStreaming/Private/LocalFileNetworkReplayStreaming.cpp#L282
+        /// </summary>
         public virtual void ParseCheckPoint()
         {
         }
 
+        /// <summary>
+        /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/NetworkReplayStreaming/LocalFileNetworkReplayStreaming/Private/LocalFileNetworkReplayStreaming.cpp#L363
+        /// </summary>
+        /// <returns></returns>
         public virtual IEvent ParseEvent()
         {
             var metadata = new EventMetadata
@@ -226,6 +240,9 @@ namespace FortniteReplayReader
 
         }
 
+        /// <summary>
+        /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/NetworkReplayStreaming/LocalFileNetworkReplayStreaming/Private/LocalFileNetworkReplayStreaming.cpp#L318
+        /// </summary>
         public virtual void ParseReplayData()
         {
         }
@@ -272,7 +289,7 @@ namespace FortniteReplayReader
             }
             else
             {
-                header.Changelist = ReadUInt16();
+                header.Changelist = ReadUInt32();
             }
 
             if (header.Version <= NetworkVersionHistory.HISTORY_MULTIPLE_LEVELS)
