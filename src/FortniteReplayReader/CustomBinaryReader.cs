@@ -1,5 +1,4 @@
-﻿using FortniteReplayReader.Core.Models.Enums;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 
@@ -96,6 +95,18 @@ namespace FortniteReplayReader
         }
 
         /// <summary>
+        /// Reads a Boolean value from the current stream and advances the current position of the stream by 4-bytes.
+        /// </summary>
+        /// <returns>true if the byte is nonzero; otherwise, false.</returns>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when the end of the stream is reached.</exception>
+        /// <exception cref="System.ObjectDisposedException">Thrown when the stream is closed.</exception>
+        /// <exception cref="System.IO.IOException">Thrown when an I/O error occurs.</exception>
+        public virtual bool ReadInt32AsBoolean()
+        {
+            return ReadInt32() == 1;
+        }
+
+        /// <summary>
         /// Reads an array of tuples from the current stream. The array is prefixed with the number of items in it.
         /// see https://github.com/EpicGames/UnrealEngine/blob/7d9919ac7bfd80b7483012eab342cb427d60e8c9/Engine/Source/Runtime/Core/Public/Containers/Array.h#L1069
         /// </summary>
@@ -174,11 +185,11 @@ namespace FortniteReplayReader
         {
             uint value = 0;
             byte count = 0;
-            bool remaining = true;
+            var remaining = true;
 
             while (remaining)
             {
-                byte nextByte = ReadByte();
+                var nextByte = ReadByte();
                 remaining = (nextByte & 1) == 1;            // Check 1 bit to see if theres more after this
                 nextByte >>= 1;                             // Shift to get actual 7 bit value
                 value += (uint)nextByte << (7 * count++);   // Add to total value

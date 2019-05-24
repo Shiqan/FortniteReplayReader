@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using FortniteReplayReader.Core.Models.Events;
+using System.Collections.Generic;
 
 namespace FortniteReplayReader.Core.Models
 {

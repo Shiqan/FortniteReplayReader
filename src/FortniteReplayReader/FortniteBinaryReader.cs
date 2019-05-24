@@ -2,9 +2,11 @@
 using FortniteReplayReader.Core.Exceptions;
 using FortniteReplayReader.Core.Models;
 using FortniteReplayReader.Core.Models.Enums;
+using FortniteReplayReader.Core.Models.Events;
 using FortniteReplayReader.Extensions;
 using System;
 using System.IO;
+using System.Text;
 
 namespace FortniteReplayReader
 {
@@ -120,7 +122,11 @@ namespace FortniteReplayReader
                     Replay.Header = ParseHeader();
                 }
 
-                BaseStream.Seek(offset + chunkSize, SeekOrigin.Begin);
+                if (BaseStream.Position != offset + chunkSize)
+                {
+                    // log
+                    BaseStream.Seek(offset + chunkSize, SeekOrigin.Begin);
+                }
             }
         }
 
@@ -171,7 +177,51 @@ namespace FortniteReplayReader
                 return null;
             }
 
+            else if (metadata.Metadata == ReplayEventTypes.CHARACTER_SAMPLE)
+            {
+                return ParseCharacterSample(metadata);
+            }
+
+            else if (metadata.Group == ReplayEventTypes.ZONE_UPDATE)
+            {
+                return ParseZoneUpdateEvent(metadata);
+            }
+
+            else if (metadata.Group == ReplayEventTypes.BATTLE_BUS)
+            {
+                return ParseBattleBusFlightEvent(metadata);
+            }
+
+            // log
+            // optionally throw?
             throw new UnknownEventException();
+        }
+
+        public virtual CharacterSample ParseCharacterSample(EventMetadata metadata)
+        {
+            return new CharacterSample()
+            {
+                EventMetadata = metadata,
+                Unknown = ReadFString()
+            };
+        }
+
+        public virtual ZoneUpdate ParseZoneUpdateEvent(EventMetadata metadata)
+        {
+            SkipBytes(20);
+            return new ZoneUpdate()
+            {
+                EventMetadata = metadata,
+            };
+        }
+
+        public virtual BattleBusFlight ParseBattleBusFlightEvent(EventMetadata metadata)
+        {
+            SkipBytes(41);
+            return new BattleBusFlight()
+            {
+                EventMetadata = metadata,
+            };
         }
 
         public virtual TeamStats ParseTeamStats(EventMetadata metadata)
@@ -207,37 +257,51 @@ namespace FortniteReplayReader
 
         public virtual PlayerElimination ParseElimination(EventMetadata metadata)
         {
-            var branch = Replay.Header.Branch;
-            switch (branch)
-            {
-                case "++Fortnite+Release-4.0":
-                    SkipBytes(12);
-                    break;
-                case "++Fortnite+Release-4.2":
-                    SkipBytes(40);
-                    break;
-                default:
-                    SkipBytes(45);
-                    break;
-            }
-
             try
             {
-                return new PlayerElimination
+                // todo fix this ugly piece of code...
+                var branch = Replay.Header.Branch;
+                var elim = new PlayerElimination
                 {
-                    EventMetadata = metadata,
-                    Eliminated = ReadFString(),
-                    Eliminator = ReadFString(),
-                    GunType = ReadByteAsEnum<GunType>(),
-                    Knocked = ReadInt32() == 1,
-                    Time = metadata.StartTime.MillisecondsToTimeStamp()
+                    EventMetadata = metadata
                 };
+                var parsed = false;
+
+                switch (branch)
+                {
+                    case "++Fortnite+Release-4.0":
+                        SkipBytes(12);
+                        break;
+                    case "++Fortnite+Release-4.2":
+                        SkipBytes(40);
+                        break;
+                    case "++Fortnite+Release-9.10":
+                        SkipBytes(87);
+                        elim.Eliminated = ReadGUID();
+                        SkipBytes(2);
+                        elim.Eliminator = ReadGUID();
+                        parsed = true;
+                        break;
+                    default:
+                        SkipBytes(45);
+                        break;
+                }
+
+                if (!parsed)
+                {
+                    elim.Eliminated = ReadFString();
+                    elim.Eliminator = ReadFString();
+                }
+
+                elim.GunType = ReadByteAsEnum<GunType>();
+                elim.Knocked = ReadUInt32AsBoolean();
+                elim.Time = metadata.StartTime.MillisecondsToTimeStamp();
+                return elim;
             }
             catch (Exception ex)
             {
                 throw new PlayerEliminationException($"Error while parsing PlayerElimination at timestamp {metadata.StartTime}", ex);
             }
-
         }
 
         /// <summary>
@@ -285,7 +349,7 @@ namespace FortniteReplayReader
                 header.Minor = ReadUInt16();
                 header.Patch = ReadUInt16();
                 header.Changelist = ReadUInt32();
-                header.Branch = ReadFString();                
+                header.Branch = ReadFString();
             }
             else
             {
