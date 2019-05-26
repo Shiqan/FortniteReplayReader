@@ -1,8 +1,6 @@
-﻿using FortniteReplayReader.Core.Contracts;
-
-namespace FortniteReplayReader.Core.Models.Events
+﻿namespace FortniteReplayReader.Core.Models.Events
 {
-    public class Stats : IEvent
+    public class Stats : BaseEvent
     {
         public uint Unknown { get; set; }
         public uint Eliminations { get; set; }
@@ -17,6 +15,5 @@ namespace FortniteReplayReader.Core.Models.Events
         public uint MaterialsGathered { get; set; }
         public uint MaterialsUsed { get; set; }
         public uint TotalTraveled { get; set; }
-        public EventMetadata EventMetadata { get; set; }
     }
 }

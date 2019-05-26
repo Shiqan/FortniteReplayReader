@@ -133,8 +133,8 @@ namespace FortniteReplayReader
         /// Reads an array of <typeparamref name="T"/> from the current stream. The array is prefixed with the number of items in it.
         /// see https://github.com/EpicGames/UnrealEngine/blob/7d9919ac7bfd80b7483012eab342cb427d60e8c9/Engine/Source/Runtime/Core/Public/Containers/Array.h#L1069
         /// </summary>
-        /// <typeparam name="T">The type of the second value.</typeparam>
-        /// <param name="func1">The function to parse the fist value.</param>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="func1">The function to the value.</param>
         /// <returns>An array of tuples.</returns>
         /// <exception cref="System.IO.EndOfStreamException">Thrown when the end of the stream is reached.</exception>
         /// <exception cref="System.ObjectDisposedException">Thrown when the stream is closed.</exception>
@@ -151,6 +151,20 @@ namespace FortniteReplayReader
         }
 
         /// <summary>
+        /// Reads <paramref name="count"/> bytes from the current stream and advances the current position of the stream by <paramref name="count"/>-bytes.
+        /// </summary>
+        /// <param name="count">Numer of bytes to read.</param>
+        /// <returns>A string.</returns>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when the end of the stream is reached.</exception>
+        /// <exception cref="System.ObjectDisposedException">Thrown when the stream is closed.</exception>
+        /// <exception cref="System.IO.IOException">Thrown when an I/O error occurs.</exception>
+        public virtual string ReadBytesToString(int count)
+        {
+            // https://github.com/dotnet/corefx/issues/10013
+            return BitConverter.ToString(ReadBytes(count)).Replace("-", "");
+        }
+
+        /// <summary>
         /// Reads 16 bytes from the current stream and advances the current position of the stream by 16-bytes.
         /// </summary>
         /// <returns>A GUID in string format read from this stream.</returns>
@@ -159,10 +173,8 @@ namespace FortniteReplayReader
         /// <exception cref="System.IO.IOException">Thrown when an I/O error occurs.</exception>
         public virtual string ReadGUID()
         {
-            var guid = new Guid(ReadBytes(16));
-            return guid.ToString();
+            return ReadBytesToString(16);
         }
-
 
         /// <summary>
         /// Advances the current position of the stream by <paramref name="byteCount"/> bytes.
@@ -175,9 +187,20 @@ namespace FortniteReplayReader
         {
             BaseStream.Seek(byteCount, SeekOrigin.Current);
         }
+        
+        /// <summary>
+        /// Advances the current position of the stream by <paramref name="byteCount"/> bytes.
+        /// </summary>
+        /// <param name="byteCount">The amount of bytes to skip. This value must be 0 or a non-negative number.</param>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when the end of the stream is reached.</exception>
+        /// <exception cref="System.ObjectDisposedException">Thrown when the stream is closed.</exception>
+        /// <exception cref="System.IO.IOException">Thrown when an I/O error occurs.</exception>
+        public void SkipBytes(int byteCount)
+        {
+            BaseStream.Seek(byteCount, SeekOrigin.Current);
+        }
 
         /// <summary>
-        /// 
         /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/Core/Private/Serialization/Archive.cpp#L1026
         /// </summary>
         /// <returns>uint</returns>

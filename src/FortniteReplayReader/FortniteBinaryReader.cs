@@ -6,7 +6,6 @@ using FortniteReplayReader.Core.Models.Events;
 using FortniteReplayReader.Extensions;
 using System;
 using System.IO;
-using System.Text;
 
 namespace FortniteReplayReader
 {
@@ -31,6 +30,11 @@ namespace FortniteReplayReader
             this.Replay = new Replay();
         }
 
+        public FortniteBinaryReader(Stream input, Replay replay) : base(input)
+        {
+            this.Replay = replay;
+        }
+
         public FortniteBinaryReader(Stream input, int offset) : base(input)
         {
             if (input.Length < offset)
@@ -39,6 +43,17 @@ namespace FortniteReplayReader
             }
 
             this.Replay = new Replay();
+            BaseStream.Position = offset;
+        }
+
+        public FortniteBinaryReader(Stream input, int offset, Replay replay) : base(input)
+        {
+            if (input.Length < offset)
+            {
+                throw new EndOfStreamException();
+            }
+
+            this.Replay = replay;
             BaseStream.Position = offset;
         }
 
@@ -135,6 +150,7 @@ namespace FortniteReplayReader
         /// </summary>
         public virtual void ParseCheckPoint()
         {
+            // see https://github.com/Shiqan/FortniteReplayDecompressor
         }
 
         /// <summary>
@@ -174,7 +190,7 @@ namespace FortniteReplayReader
 
             else if (metadata.Metadata == ReplayEventTypes.ENCRYPTION_KEY)
             {
-                return null;
+                return ParseEncryptionKeyEvent(metadata);
             }
 
             else if (metadata.Metadata == ReplayEventTypes.CHARACTER_SAMPLE)
@@ -199,16 +215,26 @@ namespace FortniteReplayReader
 
         public virtual CharacterSample ParseCharacterSample(EventMetadata metadata)
         {
+            SkipBytes(metadata.SizeInBytes);
             return new CharacterSample()
             {
                 EventMetadata = metadata,
-                Unknown = ReadFString()
+            };
+        }
+
+        public virtual EncryptionKey ParseEncryptionKeyEvent(EventMetadata metadata)
+        {
+            return new EncryptionKey()
+            {
+                EventMetadata = metadata,
+                Key = ReadBytesToString(32)
             };
         }
 
         public virtual ZoneUpdate ParseZoneUpdateEvent(EventMetadata metadata)
         {
-            SkipBytes(20);
+            // 21 bytes in 9, 20 in 9.10...
+            SkipBytes(metadata.SizeInBytes);
             return new ZoneUpdate()
             {
                 EventMetadata = metadata,
@@ -217,7 +243,8 @@ namespace FortniteReplayReader
 
         public virtual BattleBusFlight ParseBattleBusFlightEvent(EventMetadata metadata)
         {
-            SkipBytes(41);
+            // Added in 9 and removed again in 9.10?
+            SkipBytes(metadata.SizeInBytes);
             return new BattleBusFlight()
             {
                 EventMetadata = metadata,
@@ -259,36 +286,33 @@ namespace FortniteReplayReader
         {
             try
             {
-                // todo fix this ugly piece of code...
                 var branch = Replay.Header.Branch;
                 var elim = new PlayerElimination
                 {
                     EventMetadata = metadata
                 };
-                var parsed = false;
-
-                switch (branch)
+                if (Replay.Header.EngineNetworkVersion >= EngineNetworkVersionHistory.HISTORY_UPDATE9 && branch.Contains("9.10"))
                 {
-                    case "++Fortnite+Release-4.0":
-                        SkipBytes(12);
-                        break;
-                    case "++Fortnite+Release-4.2":
-                        SkipBytes(40);
-                        break;
-                    case "++Fortnite+Release-9.10":
-                        SkipBytes(87);
-                        elim.Eliminated = ReadGUID();
-                        SkipBytes(2);
-                        elim.Eliminator = ReadGUID();
-                        parsed = true;
-                        break;
-                    default:
-                        SkipBytes(45);
-                        break;
+                    SkipBytes(87);
+                    elim.Eliminated = ReadGUID();
+                    SkipBytes(2);
+                    elim.Eliminator = ReadGUID();
                 }
-
-                if (!parsed)
+                else
                 {
+
+                    switch (branch)
+                    {
+                        case "++Fortnite+Release-4.0":
+                            SkipBytes(12);
+                            break;
+                        case "++Fortnite+Release-4.2":
+                            SkipBytes(40);
+                            break;
+                        default:
+                            SkipBytes(45);
+                            break;
+                    }
                     elim.Eliminated = ReadFString();
                     elim.Eliminator = ReadFString();
                 }
@@ -309,6 +333,7 @@ namespace FortniteReplayReader
         /// </summary>
         public virtual void ParseReplayData()
         {
+            // see https://github.com/Shiqan/FortniteReplayDecompressor
         }
 
         /// <summary>
@@ -326,24 +351,24 @@ namespace FortniteReplayReader
 
             var header = new Header
             {
-                Version = ReadUInt32AsEnum<NetworkVersionHistory>()
+                NetworkVersion = ReadUInt32AsEnum<NetworkVersionHistory>()
             };
 
-            if (header.Version <= NetworkVersionHistory.HISTORY_EXTRA_VERSION)
+            if (header.NetworkVersion <= NetworkVersionHistory.HISTORY_EXTRA_VERSION)
             {
-                throw new InvalidReplayException($"Header.Version < MIN_NETWORK_DEMO_VERSION. Header.Version: {header.Version}, MIN_NETWORK_DEMO_VERSION: {NetworkVersionHistory.HISTORY_EXTRA_VERSION}");
+                throw new InvalidReplayException($"Header.Version < MIN_NETWORK_DEMO_VERSION. Header.Version: {header.NetworkVersion}, MIN_NETWORK_DEMO_VERSION: {NetworkVersionHistory.HISTORY_EXTRA_VERSION}");
             }
 
             header.NetworkChecksum = ReadUInt32();
-            header.EngineNetworkVersionHistory = ReadUInt32AsEnum<EngineNetworkVersionHistory>();
+            header.EngineNetworkVersion = ReadUInt32AsEnum<EngineNetworkVersionHistory>();
             header.GameNetworkProtocolVersion = ReadUInt32();
 
-            if (header.Version >= NetworkVersionHistory.HISTORY_HEADER_GUID)
+            if (header.NetworkVersion >= NetworkVersionHistory.HISTORY_HEADER_GUID)
             {
                 header.Guid = ReadGUID();
             }
 
-            if (header.Version >= NetworkVersionHistory.HISTORY_SAVE_FULL_ENGINE_VERSION)
+            if (header.NetworkVersion >= NetworkVersionHistory.HISTORY_SAVE_FULL_ENGINE_VERSION)
             {
                 header.Major = ReadUInt16();
                 header.Minor = ReadUInt16();
@@ -356,7 +381,7 @@ namespace FortniteReplayReader
                 header.Changelist = ReadUInt32();
             }
 
-            if (header.Version <= NetworkVersionHistory.HISTORY_MULTIPLE_LEVELS)
+            if (header.NetworkVersion <= NetworkVersionHistory.HISTORY_MULTIPLE_LEVELS)
             {
                 throw new NotImplementedException();
             }
@@ -366,7 +391,7 @@ namespace FortniteReplayReader
                 header.LevelNamesAndTimes = ReadTupleArray(ReadFString, ReadUInt32);
             }
 
-            if (header.Version >= NetworkVersionHistory.HISTORY_HEADER_FLAGS)
+            if (header.NetworkVersion >= NetworkVersionHistory.HISTORY_HEADER_FLAGS)
             {
                 header.Flags = ReadUInt32AsEnum<ReplayHeaderFlags>();
             }

@@ -1,9 +1,6 @@
-using FortniteReplayReader.Core.Contracts;
-
 namespace FortniteReplayReader.Core.Models.Events
 {
-    public class ZoneUpdate : IEvent
+    public class ZoneUpdate : BaseEvent
     {
-        public EventMetadata EventMetadata { get; set; }
     }
 }

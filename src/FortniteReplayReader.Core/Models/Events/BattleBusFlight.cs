@@ -1,9 +1,6 @@
-using FortniteReplayReader.Core.Contracts;
-
 namespace FortniteReplayReader.Core.Models.Events
 {
-    public class BattleBusFlight : IEvent
+    public class BattleBusFlight : BaseEvent
     {
-        public EventMetadata EventMetadata { get; set; }
     }
 }

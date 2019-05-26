@@ -17,8 +17,8 @@ namespace ConsoleReader
             {
                 var replayReader = new ReplayReader();
                 var replayInfo = replayReader.Read(replayFile);
-                Console.WriteLine($"Total players: {replayInfo.TeamStats.TotalPlayers}");
-                Console.WriteLine($"Total elims: {replayInfo.Eliminations.Count}");
+                Console.WriteLine($"Total players: {replayInfo.TeamStats?.TotalPlayers}");
+                Console.WriteLine($"Total elims: {replayInfo.Eliminations?.Count}");
 
                 //    using (var stream = File.Open(replayFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 //    {

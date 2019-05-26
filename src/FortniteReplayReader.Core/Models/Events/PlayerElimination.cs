@@ -1,16 +1,14 @@
-using FortniteReplayReader.Core.Contracts;
 using System;
 
 namespace FortniteReplayReader.Core.Models.Events
 {
-    public class PlayerElimination : IEvent, IEquatable<PlayerElimination>
+    public class PlayerElimination : BaseEvent, IEquatable<PlayerElimination>
     {
         public string Eliminated { get; set; }
         public string Eliminator { get; set; }
         public GunType GunType { get; set; }
         public string Time { get; set; }
         public bool Knocked { get; set; }
-        public EventMetadata EventMetadata { get; set; }
 
         public bool Equals(PlayerElimination other)
         {

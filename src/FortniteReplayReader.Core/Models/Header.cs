@@ -7,9 +7,9 @@ namespace FortniteReplayReader.Core.Models
     /// </summary>
     public class Header
     {
-        public NetworkVersionHistory Version { get; set; }
+        public NetworkVersionHistory NetworkVersion { get; set; }
         public uint NetworkChecksum { get; set; }
-        public EngineNetworkVersionHistory EngineNetworkVersionHistory { get; set; }
+        public EngineNetworkVersionHistory EngineNetworkVersion { get; set; }
         public uint GameNetworkProtocolVersion { get; set; }
         public string Guid { get; set; }
         public ushort Major { get; set; }
