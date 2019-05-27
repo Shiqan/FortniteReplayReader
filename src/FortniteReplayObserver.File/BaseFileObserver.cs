@@ -1,5 +1,4 @@
-﻿using FortniteReplayReader.Core.Contracts;
-using FortniteReplayReader.Observerable.Contracts;
+﻿using FortniteReplayReader.Observerable.Contracts;
 using Newtonsoft.Json;
 using System;
 

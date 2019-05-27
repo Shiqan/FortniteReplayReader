@@ -1,4 +1,4 @@
-﻿using FortniteReplayReader.Core.Models;
+﻿using FortniteReplayReader.Core.Models.Events;
 
 namespace FortniteReplayObserver.Redis
 {
