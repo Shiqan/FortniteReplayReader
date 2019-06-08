@@ -68,6 +68,11 @@ namespace FortniteReplayReader
             return this.Replay;
         }
 
+        public virtual void Debug(string name, byte[] output)
+        {
+            File.WriteAllBytes($"{name}-{this.BaseStream.Position - output.Length}.dump", output);
+        }
+
         /// <summary>
         /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/NetworkReplayStreaming/LocalFileNetworkReplayStreaming/Private/LocalFileNetworkReplayStreaming.cpp#L183
         /// </summary>
@@ -185,7 +190,7 @@ namespace FortniteReplayReader
             else if (metadata.Metadata == ReplayEventTypes.TEAM_STATS)
             {
                 Replay.TeamStats = ParseTeamStats(metadata);
-                return Replay.Stats;
+                return Replay.TeamStats;
             }
 
             else if (metadata.Metadata == ReplayEventTypes.ENCRYPTION_KEY)
@@ -208,6 +213,11 @@ namespace FortniteReplayReader
                 return ParseBattleBusFlightEvent(metadata);
             }
 
+            else if (metadata.Group == "fortBenchEvent")
+            {
+                return null;
+            }
+
             // log
             // optionally throw?
             throw new UnknownEventException();
@@ -215,7 +225,7 @@ namespace FortniteReplayReader
 
         public virtual CharacterSample ParseCharacterSample(EventMetadata metadata)
         {
-            SkipBytes(metadata.SizeInBytes);
+            Debug("charactersample", ReadBytes(metadata.SizeInBytes));
             return new CharacterSample()
             {
                 EventMetadata = metadata,
@@ -234,7 +244,7 @@ namespace FortniteReplayReader
         public virtual ZoneUpdate ParseZoneUpdateEvent(EventMetadata metadata)
         {
             // 21 bytes in 9, 20 in 9.10...
-            SkipBytes(metadata.SizeInBytes);
+            Debug("zoneupdate", ReadBytes(metadata.SizeInBytes));
             return new ZoneUpdate()
             {
                 EventMetadata = metadata,
@@ -244,7 +254,7 @@ namespace FortniteReplayReader
         public virtual BattleBusFlight ParseBattleBusFlightEvent(EventMetadata metadata)
         {
             // Added in 9 and removed again in 9.10?
-            SkipBytes(metadata.SizeInBytes);
+            Debug("battlebusflight", ReadBytes(metadata.SizeInBytes));
             return new BattleBusFlight()
             {
                 EventMetadata = metadata,
@@ -264,10 +274,10 @@ namespace FortniteReplayReader
 
         public virtual Stats ParseMatchStats(EventMetadata metadata)
         {
-            SkipBytes(4);
             return new Stats()
             {
                 EventMetadata = metadata,
+                Unknown = ReadUInt32(),
                 Accuracy = ReadSingle(),
                 Assists = ReadUInt32(),
                 Eliminations = ReadUInt32(),
@@ -286,12 +296,14 @@ namespace FortniteReplayReader
         {
             try
             {
-                var branch = Replay.Header.Branch;
+                var changeList = Replay.Header.Changelist;
                 var elim = new PlayerElimination
                 {
                     EventMetadata = metadata
                 };
-                if (Replay.Header.EngineNetworkVersion >= EngineNetworkVersionHistory.HISTORY_UPDATE9 && branch.Contains("9.10"))
+
+                // "++Fortnite+Release-9.10"
+                if (Replay.Header.EngineNetworkVersion >= EngineNetworkVersionHistory.HISTORY_UPDATE9 && changeList >= 6573057)
                 {
                     SkipBytes(87);
                     elim.Eliminated = ReadGUID();
@@ -300,18 +312,19 @@ namespace FortniteReplayReader
                 }
                 else
                 {
-
-                    switch (branch)
+                    // "++Fortnite+Release-4.0"
+                    if (changeList <= 4039451)
                     {
-                        case "++Fortnite+Release-4.0":
-                            SkipBytes(12);
-                            break;
-                        case "++Fortnite+Release-4.2":
-                            SkipBytes(40);
-                            break;
-                        default:
-                            SkipBytes(45);
-                            break;
+                        SkipBytes(12);
+                    }
+                    // "++Fortnite+Release-4.2"
+                    else if (changeList <= 4072250)
+                    {
+                        SkipBytes(40);
+                    }
+                    else
+                    {
+                        SkipBytes(45);
                     }
                     elim.Eliminated = ReadFString();
                     elim.Eliminator = ReadFString();
