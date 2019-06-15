@@ -9,8 +9,14 @@ using System.IO;
 
 namespace FortniteReplayReader
 {
+    /// <summary>
+    /// Fortnite Replay file reader
+    /// </summary>
     public class FortniteBinaryReader : CustomBinaryReader
     {
+        /// <summary>
+        /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/NetworkReplayStreaming/LocalFileNetworkReplayStreaming/Private/LocalFileNetworkReplayStreaming.cpp#L59
+        /// </summary>
         public const uint FileMagic = 0x1CA2E27F;
 
         /// <summary>
@@ -174,6 +180,7 @@ namespace FortniteReplayReader
                 SizeInBytes = ReadInt32()
             };
 
+            // Every event seems to start with some unknown int
             if (metadata.Group == ReplayEventTypes.PLAYER_ELIMINATION)
             {
                 var elimination = ParseElimination(metadata);
