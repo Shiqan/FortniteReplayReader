@@ -7,6 +7,9 @@
 
 C# parser for your Fortnite replays.
 
+## :warning: Deprecated
+This project is merged into [Fortnite Replay Decompressor](https://github.com/Shiqan/FortniteReplayDecompressor). Any further development is done in that repo!
+
 ## Special thanks
 Special thanks to fredimachado for creating the first (public) [Fortnite Replay Parser](https://github.com/fredimachado/FortniteReplayReader).
 
